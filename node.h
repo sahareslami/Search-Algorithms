@@ -3,17 +3,17 @@
 using namespace std;
 
 
-enum actions{Up , Down , Left , Right};
+//enum actions{Up , Down , Left , Right};
 
 struct node{
-	vector<int> state;
-	long long hash_number;
-	actions action;
+	int state[9];
+	long long hash;
+	int empty_cell;
 	long cost;
 	node* parent;
 
-};
+	bool operator <(const node& a)const{
+		return a.hash < hash;
+	}
 
-bool operator <(const node& a,const node& b){
-	return a.hash_number < b.hash_number;
-}
+};
