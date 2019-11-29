@@ -1,5 +1,6 @@
 #include <iostream>
 #include <set>
+#include <functional>
 #include "node.h"
 
 
@@ -24,7 +25,12 @@ vector<node> Jtry(node* n){
 	return a;
 
 }
+
+long long make_hash(){
+
+}
 int main(){
+	int a[1]
 	struct node p;
 	p.parent = &p;
 	p.cost = 5;
@@ -34,9 +40,11 @@ int main(){
 	cout <<"ziad shod"<< p.state[1] << endl;
 
 	struct node n = {{0 , 167 , 3 , 2} , 10*1LL , 10  , 10 , &p};
+	long long what = make_hash(n.)
 	Ytry(n.state);
 
 	set<node> frontier;
+
 	vector<node> tt = Jtry(&n);
 	cout << (tt).size() << endl;
 	frontier.insert(p);

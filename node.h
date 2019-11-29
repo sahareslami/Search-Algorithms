@@ -11,9 +11,10 @@ struct node{
 	int empty_cell;
 	long cost;
 	node* parent;
+	int heuristic;
 
-	bool operator <(const node& a)const{
+	/*bool operator <(const node& a)const{
 		return a.hash < hash;
-	}
+	}*/
 
 };

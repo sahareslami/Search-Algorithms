@@ -1,34 +1,22 @@
 #include <iostream>
-#include <explored>
+#include <set>
+#include <vector>
 #include <queue>
 #include "node.h"
 
 
 
 using namespace std;
-const int n = 9;
+
+const int n = 3;
+const int hash_base = 37;
+const long long hash_mod = 1e9 + 7;
 set<long long> explored;
 queue<node> frontier;
 
 
-vector<node> bfs(node *initNode){
-	if(goal_test(*initNode)) return solution(&initNode);
-	frontier.push(*initNode);
-	explored.insert(*initNode);
-	while(!frontier.empty()){
-		node node = frontier.front();
-		vector<node> childs = successor(&node);
-		for(node child: childs){
-			if(explored.find(child.hash) == explored.end()){
-				if(goal_test(child)) return solution(child);
-				frontier.push(child);
-				explored.insert(child);
-			}
-		}
-	}st
-}
 
-bool goal_test(node *node){
+bool goal_test(node* node){
 	if(node->state[n - 1] != 0) return 0;
 	for(int i = 0 ; i < (n - 1) ; i++){
 		if(node->state[i] != i + 1)
@@ -37,18 +25,31 @@ bool goal_test(node *node){
 	return 1;
 }
 
-vector<node> solution(node *node){
+vector<node> solution(node* v){
 	vector<node> ans;
-	while((node->parent)->hash != node->hash){
-		ans.push_back(*node);
-		node = node->parent;
+	while((v->parent)->hash != v->hash){
+		ans.push_back(*v);
+		v = v->parent;
 	}
-	return ans
+	return ans;
 }
 
-vector<node> successor(node* node){
+
+long long make_hash(int* v){
+	long long power = 1LL;
+	long long hash = 0 * 1LL;
+	for(int i = 0 ; i < (n * n) ; i++){
+		hash += (power * v[i] * 1LL) % hash_mod;
+		hash %= hash_mod;
+		power = (hash_base * power * 1LL) % hash_mod;
+	}
+	return hash;
+}
+
+
+vector<node> successor(node* parent){
 	vector<node> child;
-	int parent_empty = *node->empty_cell;
+	int parent_empty = parent->empty_cell;
 	//the row and column of empty cell
 	int r = parent_empty / n ,  c = parent_empty % n;
 
@@ -57,15 +58,16 @@ vector<node> successor(node* node){
 		struct node down;
 
 		for(int i = 0 ; i < (n*n) ; i++)
-			down.state[i] = node->state[i];
+			down.state[i] = parent->state[i];
 
-		down.state[parent_empty] = node->state[parent_empty + n];
+		down.state[parent_empty] = parent->state[parent_empty + n];
 		down.state[parent_empty + n] = 0;
 
 		down.hash = make_hash(down.state);
 		down.empty_cell = parent_empty + n;
-		down.cost = node->cost + 1;
-		down.parent = node;
+		down.cost = parent->cost + 1;
+		down.parent = parent;
+		down.heuristic = 0;
 
 		child.push_back(down);
 	}
@@ -74,15 +76,16 @@ vector<node> successor(node* node){
 	if(r - 1 >= 0){
 		struct node up;
 
-		for(int i = 0 ; i < n * n ; i++)
-			up.state[ii] = node->state[ii];
-		up.state[parent_empty] = node->state[parent_empty - n];
+		for(int i = 0 ; i < n * n ; i++)		
+			up.state[i] = parent->state[i];
+		up.state[parent_empty] = parent->state[parent_empty - n];
 		up.state[parent_empty - n] = 0;
 
 		up.empty_cell = parent_empty - n;
 		up.hash = make_hash(up.state);
-		up.cost = node->cost + 1;
-		up.parent = node;
+		up.cost = parent->cost + 1;
+		up.parent = parent;
+		up.heuristic = 0;
 
 		child.push_back(up);
 	}
@@ -91,14 +94,15 @@ vector<node> successor(node* node){
 	if(c + 1 < n){
 		struct node right;
 		for(int i = 0 ; i < (n * n) ; i++)
-			right.state[i] = node->state[i];
-		right.state[parent_empty] = node->state[parent_empty + 1];
+			right.state[i] = parent->state[i];
+		right.state[parent_empty] = parent->state[parent_empty + 1];
 		right.state[parent_empty + 1] = 0;
 
 		right.empty_cell = parent_empty + 1;
 		right.hash = make_hash(right.state);
-		right.cost = node->cost + 1;
-		right.parent = node;
+		right.cost = parent->cost + 1;
+		right.parent = parent;
+		right.heuristic = 0;
 
 		child.push_back(right);
 	}
@@ -107,15 +111,16 @@ vector<node> successor(node* node){
 		struct node left;
 
 		for (int i = 0; i < (n * n) ; i++)
-			left.state[i] = node->state[i];
+			left.state[i] = parent->state[i];
 
-		left.state[empty_cell] = node->state[parent_empty - 1];
-		left.state[empty_cell - 1] = 0;
+		left.state[parent_empty] = parent->state[parent_empty - 1];
+		left.state[parent_empty - 1] = 0;
 
 		left.empty_cell = parent_empty - 1;
 		left.hash = make_hash(left.state);
-		left.cost = node->cost + 1;
-		left.parent = node;
+		left.cost = parent->cost + 1;
+		left.parent = parent;
+		left.heuristic = 0;
 
 		child.push_back(left);
 	}
@@ -124,6 +129,27 @@ vector<node> successor(node* node){
 } 
 
 
+vector<node> bfs(node* initNode){
+	if(goal_test(initNode)) return solution(initNode);
+	frontier.push(*initNode);
+	explored.insert(initNode->hash);
+	while(!frontier.empty()){
+		node v = frontier.front();
+		vector<node> childs = successor(&v);
+		for(node child: childs){
+			if(explored.find(child.hash) == explored.end()){
+				if(goal_test(&child)) return solution(&child);
+				frontier.push(child);
+				explored.insert(child.hash);
+			}
+		}
+	}
+	return solution(initNode);
+}
+
+
 int main(){
+	struct node init = {{1 , 2 , 3 , 4 , 5, 6, 7, 8, 0} , 1 , 9 , 0 , &init , 0};
+	bfs(&init);
 
 }
