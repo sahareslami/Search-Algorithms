@@ -14,12 +14,16 @@ const long long hash_mod = 1e9 + 7;
 set<long long> explored;
 queue<node> frontier;
 
+void check(node* a){
+	for(int i = 0 ; i < (n * n) ; i++)
+		cerr << a->state[i] << " ";
+	cerr << endl;
+}
 
-
-bool goal_test(node* node){
-	if(node->state[n - 1] != 0) return 0;
-	for(int i = 0 ; i < (n - 1) ; i++){
-		if(node->state[i] != i + 1)
+bool goal_test(node* v){
+	if(v->state[n * n - 1] != 0) return 0;
+	for(int i = 0 ; i < (n * n - 1) ; i++){
+		if(v->state[i] != i + 1)
 			return 0;
 	}
 	return 1;
@@ -27,10 +31,23 @@ bool goal_test(node* node){
 
 vector<node> solution(node* v){
 	vector<node> ans;
+	cerr << "Ans:" << endl;
+	check(v);
 	while((v->parent)->hash != v->hash){
+		cout << "here for check the solution" << endl;
+		check(v);
+		check(v->parent);
+		cerr << "hash" << v->hash << " " << v->parent->hash << endl;
 		ans.push_back(*v);
 		v = v->parent;
+		cerr << "babash" << endl;	
+		check(v);
+		cerr << "babaye babash" << endl;
+		check(v->parent);
+		cerr << "hash" << v->hash << " " << v->parent->hash << endl;
+
 	}
+	ans.push_back(*v);
 	return ans;
 }
 
@@ -130,26 +147,67 @@ vector<node> successor(node* parent){
 
 
 vector<node> bfs(node* initNode){
-	if(goal_test(initNode)) return solution(initNode);
+	if(goal_test(initNode)){
+		cerr << "goal test" << endl;
+		return solution(initNode);
+	}
 	frontier.push(*initNode);
 	explored.insert(initNode->hash);
 	while(!frontier.empty()){
 		node v = frontier.front();
+		frontier.pop();
+		/*cerr << "when it's open" << endl;
+		check(&v);
+		cerr << "DADII" << endl;*/
+		check(v.parent);
+		// check(&v);
 		vector<node> childs = successor(&v);
+		cerr  << "child size" << childs.size() << endl;
 		for(node child: childs){
 			if(explored.find(child.hash) == explored.end()){
-				if(goal_test(&child)) return solution(&child);
+				cerr << "version 1-------->" << endl;
+				check(&child);
+				cerr << "DAD" << endl;
+				check(child.parent);
+				if(goal_test(&child)){
+					cerr << "right befor" << endl;
+					check(v.parent);
+					return solution(&child);
+				}
+				cerr << "version 2 ---->" << endl;
+				check(&child);
+				cerr << "DAD" << endl;
+				check(child.parent);
+
 				frontier.push(child);
 				explored.insert(child.hash);
-			}
+			}git 
 		}
 	}
 	return solution(initNode);
 }
 
 
+
+
 int main(){
-	struct node init = {{1 , 2 , 3 , 4 , 5, 6, 7, 8, 0} , 1 , 9 , 0 , &init , 0};
-	bfs(&init);
+	struct node init;// {{1 , 2 , 3 , 4 , 5, 6, 7, 8, 0} , 1 , 9 , 0 , &init , 0};
+	for(int i = 0 ; i < (n * n) ; i++){
+		cin >> init.state[i];
+		if(init.state[i] == 0)
+			init.empty_cell = i;
+	}
+	init.hash = make_hash(init.state);
+	init.cost = 0;
+	init.parent = &init;
+	init.heuristic = 0;
+
+	vector <node> ans = bfs(&init);
+	for(int i = 0 ; i < ans.size() ; i++){
+		for(int j = 0 ; j < n * n ; j++)
+			cout << ans[i].state[j] << " ";
+		cout << endl;
+	}
+
 
 }
