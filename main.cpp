@@ -26,26 +26,30 @@ vector<node> Jtry(node* n){
 
 }
 
-long long make_hash(){
 
-}
 int main(){
-	int a[1]
 	struct node p;
+	for(int i = 0 ; i < 9 ; i++)
+		p.state[i] = i;
 	p.parent = &p;
 	p.cost = 5;
 	p.hash = 9;
-	p.state[1] = 1;
-	p.state[1] = 2;
-	cout <<"ziad shod"<< p.state[1] << endl;
 
-	struct node n = {{0 , 167 , 3 , 2} , 10*1LL , 10  , 10 , &p};
-	long long what = make_hash(n.)
-	Ytry(n.state);
+	struct node n;
+	for(int i = 0 ; i < 9 ; i++)
+		n.state[i] = i;
+	n.parent = &n;
+	n.cost = 9;
+	n.hash = 2;
+	//Ytry(n.state);
 
-	set<node> frontier;
+	set<int> fring;
+	fring.insert(1);
+	fring.insert(0);
+	// node* v = (*fring.begin());
+	int a = *fring.begin();
+	cout << a;
 
-	vector<node> tt = Jtry(&n);
-	cout << (tt).size() << endl;
-	frontier.insert(p);
+	// for(auto it = fring.begin() ; it!= fring.end() ; it++)
+		// cout << (*it)->cost << " " << (*it)->hash << endl;
 }

@@ -148,30 +148,6 @@ node* nodeCopy(node child){
 }
 
 
-vector<node> bfs(node* initNode){
-	if(goal_test(initNode)){
-		return solution(initNode);
-	}
-	frontier.push(initNode);
-	explored.insert(initNode->hash);
-	while(!frontier.empty()){
-		node* v = frontier.front();
-		frontier.pop();
-		vector<node> childs = successor(v);
-		for(node child: childs){
-			if(explored.find(child.hash) == explored.end()){
-				if(goal_test(&child))	return solution(&child);
-				node* tmp = nodeCopy(child);
-				frontier.push(tmp);
-				explored.insert(child.hash);
-			}
-		}
-	}
-	return solution(initNode);
-}
-
-
-
 
 
 

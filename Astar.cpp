@@ -12,7 +12,7 @@ const int n = 3;
 const int hash_base = 37;
 const long long hash_mod = 1e9 + 7;
 set<long long> explored;
-queue<node*> frontier;
+set<pair<int , node*> > frontier;
 
 void check(node* a){
 	for(int j = 0 ; j < n ; j++){
@@ -41,6 +41,8 @@ vector<node> solution(node* v){
 	}
 	return ans;
 }
+
+int manhattanDistance(int* )
 
 
 long long make_hash(int* v){
@@ -148,21 +150,21 @@ node* nodeCopy(node child){
 }
 
 
-vector<node> bfs(node* initNode){
+vector<node> Astar(node* initNode){
 	if(goal_test(initNode)){
 		return solution(initNode);
 	}
-	frontier.push(initNode);
+	frontier.insert(make_pair(initNode->cost,initNode));
 	explored.insert(initNode->hash);
 	while(!frontier.empty()){
-		node* v = frontier.front();
-		frontier.pop();
+		node* v = (*frontier.begin()).second;
+		if(goal_test(v)) return solution(v);
+		frontier.erase(frontier.begin());
 		vector<node> childs = successor(v);
 		for(node child: childs){
 			if(explored.find(child.hash) == explored.end()){
-				if(goal_test(&child))	return solution(&child);
 				node* tmp = nodeCopy(child);
-				frontier.push(tmp);
+				frontier.insert(make_pair(tmp->cost + tmp->heuristic , tmp));
 				explored.insert(child.hash);
 			}
 		}
@@ -190,7 +192,7 @@ int main(){
 
 
 
-	vector <node> ans = bfs(&init);
+	vector <node> ans = Astar(&init);
 	for(int i = 0 ; i < ans.size() ; i++){
 		for(int j = 0 ; j < n * n ; j++)
 			cout << ans[i].state[j] << " ";
