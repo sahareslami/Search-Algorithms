@@ -12,11 +12,14 @@ const int n = 3;
 const int hash_base = 37;
 const long long hash_mod = 1e9 + 7;
 set<long long> explored;
-queue<node> frontier;
+queue<node*> frontier;
 
 void check(node* a){
-	for(int i = 0 ; i < (n * n) ; i++)
-		cerr << a->state[i] << " ";
+	for(int j = 0 ; j < n ; j++){
+	for(int i = 0 ; i < n ; i++)
+		cerr << a->state[j * 3 + i] << " ";
+		cerr << endl;
+	}
 	cerr << endl;
 }
 
@@ -34,20 +37,10 @@ vector<node> solution(node* v){
 	cerr << "Ans:" << endl;
 	check(v);
 	while((v->parent)->hash != v->hash){
-		cout << "here for check the solution" << endl;
-		check(v);
-		check(v->parent);
-		cerr << "hash" << v->hash << " " << v->parent->hash << endl;
 		ans.push_back(*v);
 		v = v->parent;
-		cerr << "babash" << endl;	
-		check(v);
-		cerr << "babaye babash" << endl;
-		check(v->parent);
-		cerr << "hash" << v->hash << " " << v->parent->hash << endl;
 
 	}
-	ans.push_back(*v);
 	return ans;
 }
 
@@ -144,48 +137,46 @@ vector<node> successor(node* parent){
 
 	return child;
 } 
+node* nodeCopy(node child){
+	node* tmp = new node;
+	for(int i = 0 ; i < 9 ; i++)
+		tmp->state[i] = child.state[i];
+	tmp->hash =  child.hash;
+	tmp->empty_cell = child.empty_cell;
+	tmp->cost = child.cost;
+	tmp->parent =  child.parent;
+	tmp->heuristic = child.heuristic;
+	return tmp;
+}
 
 
 vector<node> bfs(node* initNode){
 	if(goal_test(initNode)){
-		cerr << "goal test" << endl;
 		return solution(initNode);
 	}
-	frontier.push(*initNode);
+	frontier.push(initNode);
 	explored.insert(initNode->hash);
 	while(!frontier.empty()){
-		node v = frontier.front();
+		node* v = frontier.front();
+		cerr << "expanded" << endl;
+		check(v);
 		frontier.pop();
-		/*cerr << "when it's open" << endl;
-		check(&v);
-		cerr << "DADII" << endl;*/
-		check(v.parent);
-		// check(&v);
-		vector<node> childs = successor(&v);
-		cerr  << "child size" << childs.size() << endl;
+		vector<node> childs = successor(v);
 		for(node child: childs){
 			if(explored.find(child.hash) == explored.end()){
-				cerr << "version 1-------->" << endl;
-				check(&child);
-				cerr << "DAD" << endl;
-				check(child.parent);
 				if(goal_test(&child)){
-					cerr << "right befor" << endl;
-					check(v.parent);
 					return solution(&child);
 				}
-				cerr << "version 2 ---->" << endl;
-				check(&child);
-				cerr << "DAD" << endl;
-				check(child.parent);
-
-				frontier.push(child);
+				node* tmp = nodeCopy(child);
+				frontier.push(tmp);
 				explored.insert(child.hash);
-			}git 
+			}
 		}
 	}
 	return solution(initNode);
 }
+
+
 
 
 
