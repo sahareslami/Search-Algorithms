@@ -23,10 +23,10 @@ void check(node* a){
 	cerr << endl;
 }
 
-bool goal_test(node* v){
-	if(v->state[n * n - 1] != 0) return 0;
+bool goal_test(int* state){
+	if(state[n * n - 1] != 0) return 0;
 	for(int i = 0 ; i < (n * n - 1) ; i++){
-		if(v->state[i] != i + 1)
+		if(state[i] != i + 1)
 			return 0;
 	}
 	return 1;
@@ -149,14 +149,14 @@ node* nodeCopy(node child){
 
 
 vector<node> usc(node* initNode){
-	if(goal_test(initNode)){
+	if(goal_test(initNode->state)){
 		return solution(initNode);
 	}
 	frontier.insert(make_pair(initNode->cost,initNode));
 	explored.insert(initNode->hash);
 	while(!frontier.empty()){
 		node* v = (*frontier.begin()).second;
-		if(goal_test(v)) return solution(v);
+		if(goal_test(v->state)) return solution(v);
 		frontier.erase(frontier.begin());
 		vector<node> childs = successor(v);
 		for(node child: childs){

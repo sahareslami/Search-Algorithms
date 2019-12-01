@@ -23,10 +23,10 @@ void check(node* a){
 	cerr << endl;
 }
 
-bool goal_test(node* v){
-	if(v->state[n * n - 1] != 0) return 0;
+bool goal_test(int* state){
+	if(state[n * n - 1] != 0) return 0;
 	for(int i = 0 ; i < (n * n - 1) ; i++){
-		if(v->state[i] != i + 1)
+		if(state[i] != i + 1)
 			return 0;
 	}
 	return 1;
@@ -149,7 +149,7 @@ node* nodeCopy(node child){
 
 
 vector<node> bfs(node* initNode){
-	if(goal_test(initNode)){
+	if(goal_test(initNode->state)){
 		return solution(initNode);
 	}
 	frontier.push(initNode);
@@ -160,7 +160,7 @@ vector<node> bfs(node* initNode){
 		vector<node> childs = successor(v);
 		for(node child: childs){
 			if(explored.find(child.hash) == explored.end()){
-				if(goal_test(&child))	return solution(&child);
+				if(goal_test(child.state))	return solution(&child);
 				node* tmp = nodeCopy(child);
 				frontier.push(tmp);
 				explored.insert(child.hash);

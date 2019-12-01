@@ -147,6 +147,12 @@ node* nodeCopy(node child){
 	return tmp;
 }
 
+vector<node*> dfs(node* initNode){
+
+
+
+}
+
 
 
 
