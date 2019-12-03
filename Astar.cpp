@@ -1,7 +1,9 @@
 #include <iostream>
+#include <fstream>
 #include <set>
 #include <vector>
 #include <queue>
+#include <map>
 #include "node.h"
 
 
@@ -14,6 +16,7 @@ const int hash_base = 37;
 const long long hash_mod = 1e10 + 19;
 set<long long> explored;
 set<pair<int , node*> > frontier;
+map<string,int> database[3];
 
 void check(node* a){
 	for(int j = 0 ; j < n ; j++){
@@ -77,6 +80,28 @@ int linearConflict(int* state){
 		}
 	}
 	return lc;
+}
+
+int DisjointPatternDB(int* a){
+	string p1 = "",p2 = "" ,p3 = "";
+	string location[16];
+
+	for(int i = 0 ; i < n * n ; i++){
+		if(i < 10){
+			string tmp = "0";
+			tmp += to_string(i);
+			location[state[i]] = tmp;
+		}
+		else
+			location[state[i]] = to_string(i);
+	}
+
+	p1 = location[1] + location[2] + location[3] + location[4] + location[7];
+	p2 = location[5] + location[6] + location[9] + location[10] + location[13];
+	p3 = location[8] + location[12] + location[11] + location[14] + location[15];
+
+	return databas[0][p1] + database[1][p2] + database[2][p3];
+
 }
 long long make_hash(int* v){
 	long long power = 1LL;
@@ -232,12 +257,22 @@ vector<node> Astar(node* initNode){
 	return solution(initNode);
 }
 
-
+void upload_database(string path,int mode){
+	ifstream fin;
+	fin.open(path);
+	while(!fin.eof()){
+		string str;
+		int cnt;
+		fin >> str >> cnt;
+		database[mode][str] = cnt;
+	}
+}
 
 
 
 
 int main(){
+	upload_database("DPdatabase/DB5_5_5/DB5.txt" , 0);
 	struct node init;// {{1 , 2 , 3 , 4 , 5, 6, 7, 8, 0} , 1 , 9 , 0 , &init , 0};
 	for(int i = 0 ; i < (n * n) ; i++){
 		cin >> init.state[i];
