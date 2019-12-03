@@ -11,22 +11,21 @@ using namespace std;
 const int n = 3;
 const int hash_base = 37;
 const long long hash_mod = 1e9 + 7;
-set<long long> explored;
-queue<node*> frontier;
+set<long long> frontier;
 
-void check(node* a){
+void check(int* state){
 	for(int j = 0 ; j < n ; j++){
 	for(int i = 0 ; i < n ; i++)
-		cerr << a->state[j * n + i] << " ";
+		cerr << state[j * n + i] << " ";
 		cerr << endl;
 	}
 	cerr << endl;
 }
 
-bool goal_test(node* v){
-	if(v->state[n * n - 1] != 0) return 0;
+bool goal_test(int* state){
+	if(state[n * n - 1] != 0) return 0;
 	for(int i = 0 ; i < (n * n - 1) ; i++){
-		if(v->state[i] != i + 1)
+		if(state[i] != i + 1)
 			return 0;
 	}
 	return 1;
@@ -146,11 +145,37 @@ node* nodeCopy(node child){
 	tmp->heuristic = child.heuristic;
 	return tmp;
 }
+node* failureNode(){
+	node* f = new node;
+	for(int i = 0 ; i < n * n ; i++){
+		f->state[i] = -1;
+	}
+	f->hash = -1;
+	f->empty_cell = -1;
+	f->cost = -1;
+	f->heuristic = -1;
+	return f;
+}
 
-vector<node*> dfs(node* initNode){
+node* dfs(node* v){
+	//check(v->state);
+	frontier.insert(v->hash);
+	vector<node> childs = successor(v);
+	node* u;
+	for(node child : childs){
+		if(frontier.find(child.hash) == frontier.end()){
+				node* tmp = nodeCopy(child);
+				if(goal_test(child.state)) return tmp;
+				u = dfs(tmp);
+				if(u->hash != -1)
+					return u;
+		}
+	}
+	frontier.erase(v->hash);
 
-
-
+	if(childs.size() == 0)
+		return failureNode();
+	return u;
 }
 
 
@@ -158,6 +183,11 @@ vector<node*> dfs(node* initNode){
 
 
 int main(){
+
+	//thing should be fix
+	/*		output format
+			check if the init node is goal
+			*/
 	struct node init;// {{1 , 2 , 3 , 4 , 5, 6, 7, 8, 0} , 1 , 9 , 0 , &init , 0};
 	for(int i = 0 ; i < (n * n) ; i++){
 		cin >> init.state[i];
@@ -170,12 +200,27 @@ int main(){
 	init.heuristic = 0;
 
 
-
-
-	vector <node> ans = bfs(&init);
-	for(int i = 0 ; i < ans.size() ; i++){
+	node* ni = dfs(&init);
+	/*cerr << "goal one" << endl;
+	check(ni->state);*/
+	vector<node> ans = solution(ni);
+	/*for(int i = 0 ; i < ans.size() ; i++){
 		for(int j = 0 ; j < n * n ; j++)
 			cout << ans[i].state[j] << " ";
+		cout << endl;
+	}*/
+		//cout << 1 << "   ";
+	for(int j = 0 ; j < n * n ; j++){
+			if(j == n * n - 1) cout << init.state[j];
+			else cout << init.state[j] << ",";
+	}
+	cout << endl;
+	for(int i = (ans.size() - 1) ; i >= 0  ; i--){
+		//cout << (ans.size() - i + 1) << "   ";
+		for(int j = 0 ; j < n * n ; j++){
+			if(j == n * n - 1) cout << ans[i].state[j];
+			else cout << ans[i].state[j] << ",";
+		}
 		cout << endl;
 	}
 

@@ -5,6 +5,8 @@
 
 
 using namespace std;
+const int k = 6 * 1e8;
+int l[k];
 void Ytry(int* a){
 	cout << "ahay" << a[1] << endl;
 

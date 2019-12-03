@@ -1,7 +1,7 @@
 #include <vector>
 
 
-usign namesapce std;
+using namespace std;
 
 
 struct dpdb{
@@ -9,7 +9,7 @@ struct dpdb{
 	int empty_cell;
 	long long hash;
 	int cost;
-}
+};
 
 
 

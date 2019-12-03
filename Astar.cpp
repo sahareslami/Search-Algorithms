@@ -11,7 +11,7 @@ using namespace std;
 
 const int n = 4;
 const int hash_base = 37;
-const long long hash_mod = 1e10 + 10;
+const long long hash_mod = 1e10 + 19;
 set<long long> explored;
 set<pair<int , node*> > frontier;
 
@@ -61,7 +61,6 @@ int manhattanDistance(int* state){
 int linearConflict(int* state){
 	int lc = 0;
 	for(int i = 0 ; i < n ; i++){
-
 		for(int j = 0 ; j < n ; j++){
 			//jth tile in ith row = (i * n + j)th in state
 			int la = i * n + j;
@@ -254,14 +253,14 @@ int main(){
 
 
 	vector <node> ans = Astar(&init);
-	cout << 1 << "   ";
+	//cout << 1 << "   ";
 	for(int j = 0 ; j < n * n ; j++){
 			if(j == n * n - 1) cout << init.state[j];
 			else cout << init.state[j] << ",";
 	}
 	cout << endl;
 	for(int i = (ans.size() - 1) ; i >= 0  ; i--){
-		cout << (ans.size() - i + 1) << "   ";
+		//cout << (ans.size() - i + 1) << "   ";
 		for(int j = 0 ; j < n * n ; j++){
 			if(j == n * n - 1) cout << ans[i].state[j];
 			else cout << ans[i].state[j] << ",";
