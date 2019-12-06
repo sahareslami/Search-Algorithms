@@ -8,7 +8,7 @@
 
 using namespace std;
 
-const int n = 3;
+int n;
 const int hash_base = 37;
 const long long hash_mod = 1e9 + 7;
 set<long long> frontier;
@@ -158,7 +158,6 @@ node* failureNode(){
 }
 
 node* dfs(node* v){
-	//check(v->state);
 	frontier.insert(v->hash);
 	vector<node> childs = successor(v);
 	node* u;
@@ -183,12 +182,8 @@ node* dfs(node* v){
 
 
 int main(){
-
-	//thing should be fix
-	/*		output format
-			check if the init node is goal
-			*/
-	struct node init;// {{1 , 2 , 3 , 4 , 5, 6, 7, 8, 0} , 1 , 9 , 0 , &init , 0};
+	cin >> n;
+	struct node init;
 	for(int i = 0 ; i < (n * n) ; i++){
 		cin >> init.state[i];
 		if(init.state[i] == 0)
@@ -200,16 +195,9 @@ int main(){
 	init.heuristic = 0;
 
 
+
 	node* ni = dfs(&init);
-	/*cerr << "goal one" << endl;
-	check(ni->state);*/
 	vector<node> ans = solution(ni);
-	/*for(int i = 0 ; i < ans.size() ; i++){
-		for(int j = 0 ; j < n * n ; j++)
-			cout << ans[i].state[j] << " ";
-		cout << endl;
-	}*/
-		//cout << 1 << "   ";
 	for(int j = 0 ; j < n * n ; j++){
 			if(j == n * n - 1) cout << init.state[j];
 			else cout << init.state[j] << ",";

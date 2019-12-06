@@ -1,5 +1,6 @@
 #include <iostream>
 #include <set>
+#include <time.h>
 #include <vector>
 #include <queue>
 #include "node.h"
@@ -8,20 +9,20 @@
 
 using namespace std;
 
-const int n = 3;
+int n;
 const int hash_base = 37;
-const long long hash_mod = 1e9 + 7;
+const long long hash_mod = 9827870924701019;
 set<long long> explored;
 queue<node*> frontier;
 
-void check(node* a){
+/*void check(node* a){
 	for(int j = 0 ; j < n ; j++){
 	for(int i = 0 ; i < n ; i++)
 		cerr << a->state[j * n + i] << " ";
 		cerr << endl;
 	}
 	cerr << endl;
-}
+}*/
 
 bool goal_test(int* state){
 	if(state[n * n - 1] != 0) return 0;
@@ -170,15 +171,15 @@ vector<node> bfs(node* initNode){
 	return solution(initNode);
 }
 
-
-
-
-
-
 int main(){
-	struct node init;// {{1 , 2 , 3 , 4 , 5, 6, 7, 8, 0} , 1 , 9 , 0 , &init , 0};
+	cin >> n;
+	clock_t tStart = clock();
+	struct node init;
 	for(int i = 0 ; i < (n * n) ; i++){
+		char t;
 		cin >> init.state[i];
+		if(i < 15) cin >> t;
+
 		if(init.state[i] == 0)
 			init.empty_cell = i;
 	}
@@ -191,11 +192,16 @@ int main(){
 
 
 	vector <node> ans = bfs(&init);
-	for(int i = 0 ; i < ans.size() ; i++){
-		for(int j = 0 ; j < n * n ; j++)
-			cout << ans[i].state[j] << " ";
+	cout << ans.size() << endl;
+	for(int i = ans.size() - 1 ; i >= 0 ; i--){
+		for(int j = 0 ; j < n * n ; j++){
+			cout << ans[i].state[j];
+			if(j< 15) cout  << ",";
+		}
 		cout << endl;
 	}
+	cout << "REAL BUg" << explored.size() << endl;
+	printf("Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 
 
 }

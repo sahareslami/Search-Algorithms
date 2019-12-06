@@ -206,15 +206,15 @@ void database_5_5_5(){
 	save_database("DPdatabase/DB5_5_5/DB1.txt");*/
 
 	//pattern 2 : x x x x 5 6 x x 9 10 x x 13 x x 0
-	/*struct dpdb goal_2;
+/*	struct dpdb goal_2;
 	for(int i = 0 ; i < n * n ; i++)
 		goal_2.state[i] = -1;
-	goal_2.state[0] = 1;
-	goal_2.state[1] = 2;
 	goal_2.state[4] = 5;
+	goal_2.state[5] = 6;
 	goal_2.state[8] = 9;
+	goal_2.state[9] = 10;
 	goal_2.state[12] = 13;
-	goal_2.state[15] = 0;
+	goal_2.state[1A5] = 0;
 	goal_2.cost = 0;
 	goal_2.hash = make_hash(goal_2.state);
 	goal_2.empty_cell = 15;
@@ -226,18 +226,18 @@ void database_5_5_5(){
 	struct dpdb goal_3;
 	for(int i = 0 ; i < n * n ; i++)
 		goal_3.state[i] = -1;
-	goal_3.state[2] = 3;
-	goal_3.state[3] = 4;
-	goal_3.state[6] = 7;
 	goal_3.state[7] = 8;
+	goal_3.state[10] = 11;
 	goal_3.state[11] = 12;
+	goal_3.state[13] = 14;
+	goal_3.state[14] = 15;
 	goal_3.state[15] = 0;
 	goal_3.cost = 0;
 	goal_3.hash = make_hash(goal_3.state);
 	goal_3.empty_cell = 15;
 	bfs(&goal_3);
 
-	save_database("DPdatabase/DB5_5_5/DB5.txt");
+	save_database("DPdatabase/DB5_5_5/DB3.txt");
 
 }
 

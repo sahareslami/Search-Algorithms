@@ -1,4 +1,5 @@
 #include <iostream>
+#include <time.h>
 #include <fstream>
 #include <set>
 #include <vector>
@@ -12,16 +13,16 @@
 using namespace std;
 
 const int n = 4;
-const int hash_base = 37;
-const long long hash_mod = 1e10 + 19;
+const int hash_base = 23;
+const long long hash_mod = 9827870924701019;
 set<long long> explored;
 set<pair<int , node*> > frontier;
 map<string,int> database[3];
 
-void check(node* a){
+void check(int* state){
 	for(int j = 0 ; j < n ; j++){
 	for(int i = 0 ; i < n ; i++)
-		cerr << a->state[j * n + i] << " ";
+		cerr << state[j * n + i] << " ";
 		cerr << endl;
 	}
 	cerr << endl;
@@ -67,22 +68,39 @@ int linearConflict(int* state){
 		for(int j = 0 ; j < n ; j++){
 			//jth tile in ith row = (i * n + j)th in state
 			int la = i * n + j;
-			if(state[la] == 0 || state[la] / n != i)
+			if(state[la] == 0 || (state[la] / n) != i)
 				continue;
 			for(int k = j + 1 ; k < n ; k++){
 				//kth tile in ith row = (i * n + k)th in state
 				int lb = i * n + k;
-				if(state[lb] == 0 || state[lb] / n != i)
+				if(state[lb] == 0 || (state[lb] / n) != i)
 					continue;
 				if(state[la] > state[lb])
 						lc++;
 			}
 		}
 	}
-	return lc;
+
+	for(int i = 0 ; i < n ; i++){
+		for(int j = 0 ; j < n ; j++){
+			//j the tile of i th column
+			int la = j * 4 + i;
+			if(state[la] == 0 || (state[la] % n) != i)
+				continue;
+			for(int k = j + 1 ; k < n ; k++){
+				int lb = k * 4 + i;
+				if(state[lb] == 0 || (state[lb] % n) != i)
+					continue;
+				if(state[la] > state[lb])
+					lc++;
+			}
+		}
+	}
+	
+	return lc * 2;
 }
 
-int DisjointPatternDB(int* a){
+int DisjointPatternDB(int* state){
 	string p1 = "",p2 = "" ,p3 = "";
 	string location[16];
 
@@ -98,11 +116,20 @@ int DisjointPatternDB(int* a){
 
 	p1 = location[1] + location[2] + location[3] + location[4] + location[7];
 	p2 = location[5] + location[6] + location[9] + location[10] + location[13];
-	p3 = location[8] + location[12] + location[11] + location[14] + location[15];
+	p3 = location[8] + location[11] + location[12] + location[14] + location[15];
+	// check(state);
+	// cerr << "check patterns " << p1 << " " << p2 << " " << p3 << endl;
 
-	return databas[0][p1] + database[1][p2] + database[2][p3];
+	int ans = database[0][p1] + database[1][p2] + database[2][p3];
+	if(ans < manhattanDistance(state)){
+		check(state);
+		cerr << "manhattanDistance" << manhattanDistance(state) << endl;
+		cerr  << "DPDB" << database[0][p1] << " " << database[1][p2] << " " << database[2][p3] << endl;
+	}
+	return ans;
 
 }
+
 long long make_hash(int* v){
 	long long power = 1LL;
 	long long hash = 0 * 1LL;
@@ -138,10 +165,9 @@ vector<node> successor(node* parent){
 		//first heuristic -> manhattan Distance
 		down.heuristic = manhattanDistance(down.state);
 		//second heuristic -> manhattan distance + linear conflict
-		down.heuristic += linearConflict(down.state);
+		// down.heuristic = linearConflict(down.state) + manhattanDistance(down.state);
 		//third heuristic -> disjoint pattern database
-		//down.heuristic = 
-
+		// down.heuristic = DisjointPatternDB(down.state);
 
 		child.push_back(down);
 	}
@@ -161,11 +187,11 @@ vector<node> successor(node* parent){
 		up.parent = parent;
 
 		//first heuristic -> manhattan Distance
-		up.heuristic = manhattanDistance(up.state);
+		 up.heuristic = manhattanDistance(up.state);
 		//second heuristic -> manhattan distance + linear conflict
-		up.heuristic += linearConflict(up.state);
+		// up.heuristic = linearConflict(up.state) + manhattanDistance(up.state);
 		//third heuristic -> disjoint pattern database
-		//up.heuristic += 
+		// up.heuristic = DisjointPatternDB(up.state);
 
 		child.push_back(up);
 	}
@@ -184,11 +210,11 @@ vector<node> successor(node* parent){
 		right.parent = parent;
 
 		//first heuristic -> manhattan Distance
-		right.heuristic = manhattanDistance(right.state);
+		 right.heuristic = manhattanDistance(right.state);
 		//second heuristic -> manhattan distance + linear conflict
-		right.heuristic += linearConflict(right.state);
+		// right.heuristic = linearConflict(right.state) + manhattanDistance(right.state);
 		//third heuristic -> disjoint pattern database
-		//right.heuristic += 
+		// right.heuristic = DisjointPatternDB(right.state);
 
 
 		child.push_back(right);
@@ -208,11 +234,11 @@ vector<node> successor(node* parent){
 		left.cost = parent->cost + 1;
 		left.parent = parent;
 		//first heuristic -> manhattan Distance
-		left.heuristic = manhattanDistance(left.state);
+		 left.heuristic = manhattanDistance(left.state);
 		//second heuristic -> manhattan distance + linear conflict
-		left.heuristic += linearConflict(left.state);
+		// left.heuristic = linearConflict(left.state) + manhattanDistance(left.state);
 		//third heuristic -> disjoint pattern database
-		//left.heuritic = 
+		// left.heuristic = DisjointPatternDB(left.state);
 
 		child.push_back(left);
 	}
@@ -233,9 +259,7 @@ node* nodeCopy(node child){
 
 
 vector<node> Astar(node* initNode){
-	if(goal_test(initNode->state)){
-		return solution(initNode);
-	}
+	if(goal_test(initNode->state)) return solution(initNode);
 	frontier.insert(make_pair(initNode->cost + initNode-> heuristic ,initNode));
 	explored.insert(initNode->hash);
 	while(!frontier.empty()){
@@ -245,11 +269,8 @@ vector<node> Astar(node* initNode){
 		vector<node> childs = successor(v);
 		for(node child: childs){
 			if(explored.find(child.hash) == explored.end()){
-				 /*cerr << "checking" << endl;
-				 check(&child);
-				 cerr << child.heuristic << " " << linearConflict(child.state) <<  endl;*/
 				node* tmp = nodeCopy(child);
-				frontier.insert(make_pair(tmp->cost + tmp->heuristic , tmp));
+				frontier.insert(make_pair((child.cost + child.heuristic) , tmp));
 				explored.insert(child.hash);
 			}
 		}
@@ -272,7 +293,11 @@ void upload_database(string path,int mode){
 
 
 int main(){
-	upload_database("DPdatabase/DB5_5_5/DB5.txt" , 0);
+	clock_t tStart = clock();
+	// upload_database("DPdatabase/DB5_5_5/DB1.txt" , 0);
+	// upload_database("DPdatabase/DB5_5_5/DB2.txt" , 1);
+	// upload_database("DPdatabase/DB5_5_5/DB3.txt" , 2);
+	printf("Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 	struct node init;// {{1 , 2 , 3 , 4 , 5, 6, 7, 8, 0} , 1 , 9 , 0 , &init , 0};
 	for(int i = 0 ; i < (n * n) ; i++){
 		cin >> init.state[i];
@@ -282,7 +307,7 @@ int main(){
 	init.hash = make_hash(init.state);
 	init.cost = 0;
 	init.parent = &init;
-	init.heuristic = manhattanDistance(init.state);
+	init.heuristic = manhattanDistance(init.state) ;//+ linearConflict(init.state);
 
 
 
@@ -296,12 +321,16 @@ int main(){
 	cout << endl;
 	for(int i = (ans.size() - 1) ; i >= 0  ; i--){
 		//cout << (ans.size() - i + 1) << "   ";
+		cerr << linearConflict(ans[i].state) << endl;
 		for(int j = 0 ; j < n * n ; j++){
 			if(j == n * n - 1) cout << ans[i].state[j];
 			else cout << ans[i].state[j] << ",";
 		}
 		cout << endl;
 	}
+	cout << "path size : " << ans.size() << endl;
+	cout << "number of node expanded : " << explored.size() << endl; 
+	printf("Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 
 
 }

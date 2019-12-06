@@ -3,7 +3,6 @@
 using namespace std;
 
 
-//enum actions{Up , Down , Left , Right};
 
 struct node{
 	int state[16];
@@ -12,9 +11,5 @@ struct node{
 	long cost;
 	node* parent;
 	int heuristic;
-
-	bool operator <(const node& a)const{
-		return a.cost > cost;
-	}
 
 };
