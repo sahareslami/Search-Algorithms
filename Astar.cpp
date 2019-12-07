@@ -18,6 +18,7 @@ const long long hash_mod = 9827870924701019;
 set<long long> explored;
 set<pair<int , node*> > frontier;
 map<string,int> database[3];
+map<long long,node*> frontier_map;
 
 void check(int* state){
 	for(int j = 0 ; j < n ; j++){
@@ -163,9 +164,9 @@ vector<node> successor(node* parent){
 		down.cost = parent->cost + 1;
 		down.parent = parent;
 		//first heuristic -> manhattan Distance
-		down.heuristic = manhattanDistance(down.state);
+		// down.heuristic = manhattanDistance(down.state);
 		//second heuristic -> manhattan distance + linear conflict
-		// down.heuristic = linearConflict(down.state) + manhattanDistance(down.state);
+		down.heuristic = linearConflict(down.state) + manhattanDistance(down.state);
 		//third heuristic -> disjoint pattern database
 		// down.heuristic = DisjointPatternDB(down.state);
 
@@ -187,9 +188,9 @@ vector<node> successor(node* parent){
 		up.parent = parent;
 
 		//first heuristic -> manhattan Distance
-		 up.heuristic = manhattanDistance(up.state);
+		 // up.heuristic = manhattanDistance(up.state);
 		//second heuristic -> manhattan distance + linear conflict
-		// up.heuristic = linearConflict(up.state) + manhattanDistance(up.state);
+		up.heuristic = linearConflict(up.state) + manhattanDistance(up.state);
 		//third heuristic -> disjoint pattern database
 		// up.heuristic = DisjointPatternDB(up.state);
 
@@ -210,9 +211,9 @@ vector<node> successor(node* parent){
 		right.parent = parent;
 
 		//first heuristic -> manhattan Distance
-		 right.heuristic = manhattanDistance(right.state);
+		 // right.heuristic = manhattanDistance(right.state);
 		//second heuristic -> manhattan distance + linear conflict
-		// right.heuristic = linearConflict(right.state) + manhattanDistance(right.state);
+		right.heuristic = linearConflict(right.state) + manhattanDistance(right.state);
 		//third heuristic -> disjoint pattern database
 		// right.heuristic = DisjointPatternDB(right.state);
 
@@ -234,9 +235,9 @@ vector<node> successor(node* parent){
 		left.cost = parent->cost + 1;
 		left.parent = parent;
 		//first heuristic -> manhattan Distance
-		 left.heuristic = manhattanDistance(left.state);
+		 // left.heuristic = manhattanDistance(left.state);
 		//second heuristic -> manhattan distance + linear conflict
-		// left.heuristic = linearConflict(left.state) + manhattanDistance(left.state);
+		left.heuristic = linearConflict(left.state) + manhattanDistance(left.state);
 		//third heuristic -> disjoint pattern database
 		// left.heuristic = DisjointPatternDB(left.state);
 
@@ -257,8 +258,9 @@ node* nodeCopy(node child){
 	return tmp;
 }
 
-
-vector<node> Astar(node* initNode){
+//this is a Astar algorithm for consistent heuristic
+//manhattan distance is the only heuristic that is consistent
+vector<node> AstarC(node* initNode){
 	if(goal_test(initNode->state)) return solution(initNode);
 	frontier.insert(make_pair(initNode->cost + initNode-> heuristic ,initNode));
 	explored.insert(initNode->hash);
@@ -276,6 +278,42 @@ vector<node> Astar(node* initNode){
 		}
 	}
 	return solution(initNode);
+}
+//Astar for non-consistent heuristic
+vector<node> Astar(node* initNode){
+	if(goal_test(initNode->state)) return solution(initNode);
+	frontier.insert(make_pair(initNode->cost + initNode->heuristic , initNode));
+	frontier_map[initNode->hash] = initNode;
+	while(!frontier.empty()){
+		node* v = (*frontier.begin()).second;
+		frontier.erase(frontier.begin());
+		frontier_map.erase(v->hash);
+		explored.insert(v->hash);
+		if(goal_test(v->state)) return solution(v);
+		vector<node> childs = successor(v);
+		for(node child: childs){
+			if(explored.find(child.hash) == explored.end()){
+				node* tmp = nodeCopy(child);
+				//if child node are not in frontier
+				if(frontier_map.find(child.hash) == frontier_map.end()){
+					frontier.insert(make_pair(child.cost + child.heuristic , tmp));
+					frontier_map[child.hash] = tmp;
+				}
+				else{
+					//if child node are in the frontier but need update
+					auto it = frontier_map.find(child.hash);
+					node* updated = it->second;
+					int guess = updated->cost + updated->heuristic;
+					if(guess > child.heuristic + child.cost){
+						frontier_map.erase(updated->hash);
+						frontier_map[tmp->hash] = tmp;
+						frontier.erase(make_pair(guess , updated));
+						frontier.insert(make_pair(child.heuristic + child.cost , tmp));
+					}
+				}
+			}
+		}
+	}
 }
 
 void upload_database(string path,int mode){

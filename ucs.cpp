@@ -147,7 +147,8 @@ node* nodeCopy(node child){
 	return tmp;
 }
 
-
+//because the edge is identical this ucs it act like bfs 
+//this is not "actual" ucs ,it's faster version
 vector<node> usc(node* initNode){
 	if(goal_test(initNode->state)){
 		return solution(initNode);
@@ -166,6 +167,7 @@ vector<node> usc(node* initNode){
 				explored.insert(child.hash);
 			}
 		}
+
 	}
 	return solution(initNode);
 }
